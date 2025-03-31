@@ -32,7 +32,7 @@ jobs:
         uses: azure/appservice-settings@v1
         with:
           app-name: mini-inventory-app
-          settings-json: |
+          general-settings-json: |
             {
               "startupCommand": "bash startup.txt"
             }
