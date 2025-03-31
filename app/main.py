@@ -16,6 +16,10 @@ password = os.getenv("AZURE_SQL_PASSWORD")
 driver = "{ODBC Driver 17 for SQL Server}"
 conn_str = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}"
 
+# Debug test - delete
+st.write("Server: ", server)
+st.write("Database: ", database)
+st.write("User: ", username)
 # Connect to the database
 try: 
     conn = pyodbc.connect(conn_str)
