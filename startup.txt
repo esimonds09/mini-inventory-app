@@ -1,5 +1,8 @@
 #!/bin/bash
-echo "Starting Streamlit app..."
-source /antenv/bin/activate
+echo "Setting up virtual environment..."
+python -m venv myenv
+source myenv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
+echo "Starting Streamlit app..."
 streamlit run app/main.py --server.port 8000 --server.enableCORS false
