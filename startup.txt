@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Starting Streamlit app..."
+source /antenv/bin/activate
+pip install -r requirements.txt
+streamlit run app/main.py --server.port 8000 --server.enableCORS false
