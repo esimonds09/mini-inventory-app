@@ -1,0 +1,65 @@
+name: Deploy SQL Migrations
+
+on:
+  push:
+    branches:
+      - dev
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Choose deployment environment"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
+
+jobs:
+  deploy-to-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install sqlcmd
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
+          curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+
+      - name: Apply Migrations to Dev
+        run: |
+          sqlcmd -S ${{ secrets.AZURE_SQL_SERVER }} \
+                 -d ${{ secrets.AZURE_SQL_DATABASE }} \ 
+                 -U ${{ secrets.AZURE_SQL_USER }} \
+                 -P ${{ secrets.AZURE_SQL_PASSWORD }} \ 
+                 -i migrations/001_init_schema.sql
+
+  deploy-to-prod:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.enironment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install sqlcmd
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
+          curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+
+      - name: Apply Migrations to Prod
+        run: |
+          sqlcmd -S ${{ secrets.AZURE_SQL_SERVER }} \
+                 -d ${{ secrets.AZURE_SQL_DATABASE }} \ 
+                 -U ${{ secrets.AZURE_SQL_USER }} \
+                 -P ${{ secrets.AZURE_SQL_PASSWORD }} \ 
+                 -i migrations/001_init_schema.sql
