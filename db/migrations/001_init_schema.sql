@@ -4,7 +4,7 @@
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ProductTypes' AND xtype='U')
 BEGIN
     CREATE TABLE ProductTypes (
-        ProductTypeID INT IDENTITY PRIMARY KEY
+        ProductTypeID INT IDENTITY PRIMARY KEY,
         TypeName NVARCHAR(100) NOT NULL UNIQUE
     );
 END
