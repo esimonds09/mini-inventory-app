@@ -33,17 +33,19 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
           export PATH="$PATH:/opt/mssql-tools/bin"
 
-      - name: Check sqlcmd version
+      - name: Show Connection Info
         run: |
-          /opt/mssql-tools/bin/sqlcmd -?
+          echo "Server: ${{ secrets.AZURE_SQL_SERVER }}"
+          echo "Database: ${{ secrets.AZURE_SQL_DATABASE }}"
 
       - name: Apply Migrations to Dev
-        run: |
-          /opt/mssql-tools/bin/sqlcmd -S ${{ secrets.AZURE_SQL_SERVER }} \
-                 -d ${{ secrets.AZURE_SQL_DATABASE }} \ 
-                 -U ${{ secrets.AZURE_SQL_USER }} \
-                 -P ${{ secrets.AZURE_SQL_PASSWORD }} \ 
-                 -i migrations/001_init_schema.sql
+        run: >
+          /opt/mssql-tools/bin/sqlcmd 
+          -S ${{ secrets.AZURE_SQL_SERVER }} \
+          -d ${{ secrets.AZURE_SQL_DATABASE }} \ 
+          -U ${{ secrets.AZURE_SQL_USER }} \
+          -P ${{ secrets.AZURE_SQL_PASSWORD }} \ 
+          -i migrations/001_init_schema.sql
 
   deploy-to-prod:
     if: github.event_name == 'workflow_dispatch'
